@@ -9,7 +9,7 @@ class InteractiveOrCommandLine(cmd.Cmd):
     def do_prompt(self, line):
         print("({})".format(self.prompt))
     def do_help(self, line):
-        print("{}".format(self.doc_help))
+        print("\n\n{}".format(self.doc_help))
         print("=======================================")
         print('{}'.format(' '.join(['EOF', 'help', 'quit'])))
     def do_EOF(self, line):
@@ -20,6 +20,6 @@ class InteractiveOrCommandLine(cmd.Cmd):
 if __name__ == '__main__':
     import sys
     if len(sys.argv) > 1:
-        InteractiveOrCommandLine().onecmd(' '.join(sys.argv[1:]))
+        InteractiveOrCommandLine().onecmd(''.join(sys.argv[1:]))
     else:
         InteractiveOrCommandLine().cmdloop()
