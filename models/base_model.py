@@ -26,7 +26,7 @@ class BaseModel:
     def save(self):
 
         self.updated_at = datetime.now()
-        # storage.save()
+        storage.save()
 
     def to_dict(self):
         dictionary = {}
@@ -77,9 +77,10 @@ print("-- Create a new object --")
 my_model = BaseModel()
 my_model.name = "My_First_Model"
 my_model.my_number = 89
-my_model.save()
+# my_model.save()
 save_instance = my_model.to_dict()
 # print(save_instance)
 data = storage.new(save_instance)
+my_model.save()
 print(data)
 
