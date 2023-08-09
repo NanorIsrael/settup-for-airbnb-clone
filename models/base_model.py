@@ -8,6 +8,7 @@ path.append('.')
 from models import storage
 
 class BaseModel:
+    """ Defines the base model class"""
     def __init__(self, *args, **kwargs):
         if kwargs:
             del kwargs["__class__"]
@@ -24,11 +25,13 @@ class BaseModel:
             storage.new(self)
     
     def save(self):
+        """Saves an instance to a file """
         self.updated_at = datetime.now()
         storage.new(self)
         storage.save()
 
     def to_dict(self):
+        """Resolves an instance to a ditionary """
         dictionary = {}
         dictionary["__class__"] = self.__class__.__name__
         for key,value in self.__dict__.items():
@@ -40,4 +43,4 @@ class BaseModel:
         return dictionary
     
     def __str__(self):
-        return f"{[self.__class__.__name__]} {(self.id)} {self.__dict__}"
+        return f"[{type(self).__name__}] ({self.id}) {self.__dict__}"

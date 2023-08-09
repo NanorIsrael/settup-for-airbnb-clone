@@ -37,20 +37,15 @@ class FileStorage:
             my_file.write(json_list)
 
     def reload(self):
+        """Loads storage dictionary from file"""
         from models.base_model import BaseModel
+   
+        classes = {'BaseModel': BaseModel}
         try:
-            with open(self.__file_path, "r", encoding="UTF-8") as f:
-                content  = f.read()
-                if content is None:
-                    return
-                json_from_file = json.loads(content)
-
-                for key in json_from_file.keys():
-                    created_instance = BaseModel(json_from_file[key])
-                    deserialized_objects = {}
-                    deserialized_objects = {**{key: created_instance}}
-                return deserialized_objects
-             
+            loaded_json = {}
+            with open(self.__file_path, 'r') as f:
+                loaded_json = json.load(f)
+                for key, val in loaded_json.items():
+                        self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
-            
