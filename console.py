@@ -177,16 +177,26 @@ class HBNBCommand(cmd.Cmd):
                     pass
                 else:
                     instance = found_instance[0]
+                    attr_name = attr_name.replace('"', '')
                     original_attr = getattr(instance, attr_name, None)
                     if not original_attr is None:
                         attr_type = type(original_attr) 
                         casted_attr_value = attr_type(attr_value)
                         setattr(instance, attr_name, casted_attr_value)
                     else:
+                        if attr_value[0] == '\"':
+                            attr_value = attr_value.replace('"', '')
+                        else:
+                            pattern = re.compile(r'^[-+]?[0-9]*\.[0-9]+([eE][-+]?[0-9]+)?$')
+                            match = re.match(pattern, attr_value)
+                            if match:
+                                attr_value = float(attr_value)
+                            else:
+                                attr_value = int(attr_value)
                         setattr(instance, attr_name, attr_value)
                     print(instance)
                     instance.save()
-
+# 5.5
     def default(self, line):
         """Handle custom commands"""
         parts = line.split('.')
@@ -224,6 +234,22 @@ class HBNBCommand(cmd.Cmd):
                     search_string = f"{class_name} {id_value}"
                     self.do_destroy(f"{class_name} {id_value}")
 
+                pattern = re.compile(r'^update\((.*)\)$', re.IGNORECASE)
+                match = pattern.match(parts[1])
+                if match:
+                    params = match.group(1)
+                    print(params)
+                    # Split the parameters by commas
+                    splitted_params = [param.strip('"') for param in params.split(',')]
+                    if len(splitted_params) >= 3:
+                        id_value, attr_name, attr_value = splitted_params[:3]
+                        attr_name = attr_name.replace(" ", "")
+                        attr_value = attr_value.replace(" ", "")
+                        update_string = f"{class_name} {id_value} {attr_name} {attr_value}"
+                        print(update_string)
+                        self.do_update(update_string)
+
+
 
 if __name__ == '__main__':
     import sys
@@ -233,3 +259,4 @@ if __name__ == '__main__':
         input_data = sys.stdin.read().strip()
         cmd_instance = HBNBCommand()
         cmd_instance.onecmd(input_data)
+
