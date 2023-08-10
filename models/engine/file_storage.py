@@ -1,41 +1,58 @@
 #!/usr/bin/python3
 import json
-from models.base_model import BaseModel
+from sys import path
+path.append('.')
+
+
+"""
+a class FileStorage that serializes instances to a 
+JSON file and deserializes JSON file to instances
+"""
+
 
 class FileStorage:
-    __file_path = "file.json"
-    __objects = {}
+    def __init__(self):
+        self.__file_path = "file.json"
+        self.__objects = {}
 
     def all(self):
+        """returns the dictionary __objects"""
         return self.__objects
 
     def new(self, obj):
-        myKey = f"{obj.__class__.__name__}.{obj.id}"
-        FileStorage.__objects[myKey] = obj
+        """dictionary - empty but will store all objects by <class name>.id"""
+        myKey = f"{obj.__class__.__name__}.{obj.id}" 
+        self.__objects[myKey] = obj
+
 
     def save(self):
-        new_dict = {}
-        for key, value in FileStorage.__objects.items():
-            FileStorage.__objects[key] = value.to_dict()
+        """Stores the dict representation of instances in a file"""
+        
+        serialized_objects = {}
+        
+        for key, value in self.__objects.items():
+            serialized_objects[key] = value.to_dict()
 
-            with open(FileStorage.__file_path, "w", encoding="uft-8") as f:
-                json.dump(new_dict, f)
+        with open(self.__file_path, 'w') as my_file:
+            json_list = json.dumps(serialized_objects)
+            my_file.write(json_list)
 
     def reload(self):
-        bnbClasses = {'BaseModel': BaseModel}
+        """Loads storage dictionary from file"""
+        from models.base_model import BaseModel
+        from models.user import User
+        from models.place import Place
+        from models.state import State
+        from models.city import City
+        from models.amenity import Amenity
+        from models.review import Review
+   
+        classes = {'BaseModel': BaseModel, 'User': User, 'Place': Place, 'State': State, 'City': City, 'Amenity': Amenity, 'Review': Review}
         try:
-            with open(FileStorage.__file_path, "r") as f:
-                content  = f.read()
-                if content is None:
-                    return
-                temp = json.loads(content)
-
-                for value in temp.values():
-                    className = value["__class__"]
-                    classObject = bnbClasses[className]
-                    self.new(classObject(**value))
-
+            loaded_json = {}
+            with open(self.__file_path, 'r') as f:
+                loaded_json = json.load(f)
+                for key, val in loaded_json.items():
+                        self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
-            
-
