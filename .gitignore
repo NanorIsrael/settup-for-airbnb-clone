@@ -1,3 +1,5 @@
 .DS_Store
 file.json
 .file_storage.py.swp
+*.pyc
+*.swp
