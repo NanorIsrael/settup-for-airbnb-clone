@@ -2,7 +2,7 @@
 
 import cmd
 
-class InteractiveOrCommandLine(cmd.Cmd):
+class HBNBCommand(cmd.Cmd):
     prompt = '(hbnb) '
     doc_help = 'Documented commands (type help <topic>):'
 
@@ -11,15 +11,29 @@ class InteractiveOrCommandLine(cmd.Cmd):
     def do_help(self, line):
         print("\n\n{}".format(self.doc_help))
         print("=======================================")
-        print('{}'.format(' '.join(['EOF', 'help', 'quit'])))
+        print('{}\n'.format(' '.join(['EOF', 'help', 'quit'])))
     def do_EOF(self, line):
+        """EOF command to exit the program"""
         return True
     def do_quit(self, line):
+        """Quit command to exit the program"""
         return True
+    def emptyline(self):
+        """Do nothing on an empty line"""
+        pass
+    
+    def help_quit(self):
+        """Help message for quit command"""
+        print("Quit command to exit the program")
+
+    def help_EOF(self):
+        """Help message for EOF command"""
+        print("Exit the program with EOF (Ctrl-D)")
+
 
 if __name__ == '__main__':
     import sys
     if len(sys.argv) > 1:
-        InteractiveOrCommandLine().onecmd(''.join(sys.argv[1:]))
+        HBNBCommand().onecmd(''.join(sys.argv[1:]))
     else:
-        InteractiveOrCommandLine().cmdloop()
+        HBNBCommand().cmdloop()
