@@ -2,6 +2,12 @@
 
 import cmd
 from models.base_model import BaseModel
+from models.user import User
+from models.place import Place
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
 from models import FileStorage
 import uuid
 """Defines a console app for airbnb application"""
@@ -37,7 +43,7 @@ class HBNBCommand(cmd.Cmd):
     def  do_create(self, line):
         """Creates a new instance of BaseModel, 
         saves it (to the JSON file) and prints the id"""
-        classes = {"BaseModel": BaseModel}
+        classes = {'BaseModel': BaseModel, 'User': User, 'Place': Place, 'State': State, 'City': City, 'Amenity': Amenity, 'Review': Review}
         if not line:
             print("** class name missing **")
             return
@@ -52,7 +58,7 @@ class HBNBCommand(cmd.Cmd):
         """Prints the string representation of an instance 
         based on the class name and id."""
 
-        classes = {"BaseModel": BaseModel}
+        classes = {'BaseModel': BaseModel, 'User': User, 'Place': Place, 'State': State, 'City': City, 'Amenity': Amenity, 'Review': Review}
 
         if not line:
             print("** class name missing **")
@@ -78,7 +84,7 @@ class HBNBCommand(cmd.Cmd):
         """Deletes an instance based on the class name and
         id (save the change into the JSON file). """
 
-        classes = {"BaseModel": BaseModel}
+        classes = {'BaseModel': BaseModel, 'User': User, 'Place': Place, 'State': State, 'City': City, 'Amenity': Amenity, 'Review': Review}
         if not line:
             print("** class name missing **")
             return
@@ -103,7 +109,7 @@ class HBNBCommand(cmd.Cmd):
         """Deletes an instance based on the class name and
         id (save the change into the JSON file). """
 
-        classes = {"BaseModel": BaseModel}
+        classes = {'BaseModel': BaseModel, 'User': User, 'Place': Place, 'State': State, 'City': City, 'Amenity': Amenity, 'Review': Review}
         db = FileStorage()
         db.reload()
         result = db.all()
@@ -114,8 +120,9 @@ class HBNBCommand(cmd.Cmd):
                 else:
                     all_models = []
                     for key, value in result.items():
-                        if isinstance(value, classes[line]):
-                            all_models.append(str(result[key]))
+                        key_class = key.split('.')
+                        if key_class[0] == line:
+                            all_models.append(str(value))
                     print(all_models) 
         else:
             if result:
@@ -130,7 +137,7 @@ class HBNBCommand(cmd.Cmd):
         """Updates an instance based on the class name and id
          by adding or updating attribute (save the change into 
          the JSON file)."""
-        classes = {"BaseModel": BaseModel}
+        classes = {'BaseModel': BaseModel, 'User': User, 'Place': Place, 'State': State, 'City': City, 'Amenity': Amenity, 'Review': Review}
         if not line:
             print("** class name missing **")
             return
@@ -178,6 +185,26 @@ class HBNBCommand(cmd.Cmd):
                     print(instance)
                     instance.save()
 
+    def default(self, line):
+        """Handle custom commands"""
+        parts = line.split('.')
+        if len(parts) == 2:
+            class_name = parts[0]
+            classes = {'BaseModel': BaseModel, 'User': User, 'Place': Place, 'State': State, 'City': City, 'Amenity': Amenity, 'Review': Review}
+            db = FileStorage()
+            db.reload()
+            result = db.all()
+            
+            if not class_name in classes:
+                print("** class doesn't exist **")
+                return
+            else:
+                all_models = [value for key, value in result.items() if key.startswith(f"{class_name}.")]
+                formatted_models = ', '.join(map(str, all_models))
+                if parts[1] == "all()":
+                    print(f"[{formatted_models}]")
+                if parts[1] == "count()":
+                    print(len(all_models))
 
 if __name__ == '__main__':
     import sys
