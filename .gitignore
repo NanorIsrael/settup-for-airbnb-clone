@@ -3,3 +3,4 @@ file.json
 .file_storage.py.swp
 *.pyc
 *.swp
+__pycache__/*
