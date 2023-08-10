@@ -10,6 +10,8 @@ from models.amenity import Amenity
 from models.review import Review
 from models import FileStorage
 import uuid
+import re
+
 """Defines a console app for airbnb application"""
 
 
@@ -205,6 +207,23 @@ class HBNBCommand(cmd.Cmd):
                     print(f"[{formatted_models}]")
                 if parts[1] == "count()":
                     print(len(all_models))
+
+                pattern = re.compile(r'^show\((.*)\)$', re.IGNORECASE)
+                match = pattern.match(parts[1])
+                if match:
+                    match = pattern.match(parts[1])
+                    id_value = match.group(1).strip('"')
+                    search_string = f"{class_name} {id_value}"
+                    self.do_show(f"{class_name} {id_value}")
+            
+                pattern = re.compile(r'^destroy\((.*)\)$', re.IGNORECASE)
+                match = pattern.match(parts[1])
+                if match:
+                    match = pattern.match(parts[1])
+                    id_value = match.group(1).strip('"')
+                    search_string = f"{class_name} {id_value}"
+                    self.do_destroy(f"{class_name} {id_value}")
+
 
 if __name__ == '__main__':
     import sys
