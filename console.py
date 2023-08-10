@@ -199,8 +199,8 @@ class HBNBCommand(cmd.Cmd):
 # 5.5
     def default(self, line):
         """Handle custom commands"""
-        parts = line.split('.')
-        if len(parts) == 2:
+        parts = line.partition('.')
+        if len(parts) == 3:
             class_name = parts[0]
             classes = {'BaseModel': BaseModel, 'User': User, 'Place': Place, 'State': State, 'City': City, 'Amenity': Amenity, 'Review': Review}
             db = FileStorage()
@@ -213,32 +213,31 @@ class HBNBCommand(cmd.Cmd):
             else:
                 all_models = [value for key, value in result.items() if key.startswith(f"{class_name}.")]
                 formatted_models = ', '.join(map(str, all_models))
-                if parts[1] == "all()":
+                if parts[2] == "all()":
                     print(f"[{formatted_models}]")
-                if parts[1] == "count()":
+                if parts[2] == "count()":
                     print(len(all_models))
 
                 pattern = re.compile(r'^show\((.*)\)$', re.IGNORECASE)
-                match = pattern.match(parts[1])
+                match = pattern.match(parts[2])
                 if match:
-                    match = pattern.match(parts[1])
-                    id_value = match.group(1).strip('"')
+                    match = pattern.match(parts[2])
+                    id_value = match.group(2).strip('"')
                     search_string = f"{class_name} {id_value}"
                     self.do_show(f"{class_name} {id_value}")
             
                 pattern = re.compile(r'^destroy\((.*)\)$', re.IGNORECASE)
-                match = pattern.match(parts[1])
+                match = pattern.match(parts[2])
                 if match:
                     match = pattern.match(parts[1])
                     id_value = match.group(1).strip('"')
                     search_string = f"{class_name} {id_value}"
                     self.do_destroy(f"{class_name} {id_value}")
-
+                
                 pattern = re.compile(r'^update\((.*)\)$', re.IGNORECASE)
-                match = pattern.match(parts[1])
+                match = pattern.match(parts[2])
                 if match:
                     params = match.group(1)
-                    print(params)
                     # Split the parameters by commas
                     splitted_params = [param.strip('"') for param in params.split(',')]
                     if len(splitted_params) >= 3:
@@ -246,9 +245,7 @@ class HBNBCommand(cmd.Cmd):
                         attr_name = attr_name.replace(" ", "")
                         attr_value = attr_value.replace(" ", "")
                         update_string = f"{class_name} {id_value} {attr_name} {attr_value}"
-                        print(update_string)
                         self.do_update(update_string)
-
 
 
 if __name__ == '__main__':
