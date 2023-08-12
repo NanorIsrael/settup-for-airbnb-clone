@@ -196,7 +196,7 @@ class HBNBCommand(cmd.Cmd):
                         setattr(instance, attr_name, attr_value)
                     print(instance)
                     instance.save()
-# 5.5
+
     def default(self, line):
         """Handle custom commands"""
         parts = line.partition('.')
@@ -233,19 +233,33 @@ class HBNBCommand(cmd.Cmd):
                     id_value = match.group(1).strip('"')
                     search_string = f"{class_name} {id_value}"
                     self.do_destroy(f"{class_name} {id_value}")
-                
+            
+                pattern = re.compile(r'update\("([0-9a-f-]+)",\s+\{.*\}\)', re.DOTALL)
+                # test_string = 'update("38f22813-2753-4d42-b37c-57a17f1e4f88", {"first_name": "John", "age": 89})'
+                match = re.match(pattern, parts[2])
+
+                if match:
+                    uuid_arg = match.group(1)
+                    # others = match.group(2)
+                    print(f"UUID argument: {match}")
+                    return
+
+        #    'User.update("38f22813-2753-4d42-b37c-57a17f1e4f88", {'first_name': "John", "age": 89})'
+        #    ' User.update("38f[22813-2753-4d42-b37c-57a17f1e4f88", "age", 89)'
+                # pattern = re.compile(r'update\("(0-9a-f-]+)",\s+"([^"]+)",\s+(\d+)\)', re.IGNORECASE)
                 pattern = re.compile(r'^update\((.*)\)$', re.IGNORECASE)
                 match = pattern.match(parts[2])
                 if match:
                     params = match.group(1)
                     # Split the parameters by commas
                     splitted_params = [param.strip('"') for param in params.split(',')]
-                    if len(splitted_params) >= 3:
+                    if len(splitted_params) == 3:
                         id_value, attr_name, attr_value = splitted_params[:3]
                         attr_name = attr_name.replace(" ", "")
                         attr_value = attr_value.replace(" ", "")
                         update_string = f"{class_name} {id_value} {attr_name} {attr_value}"
                         self.do_update(update_string)
+
 
 
 if __name__ == '__main__':

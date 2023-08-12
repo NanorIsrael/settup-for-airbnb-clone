@@ -11,9 +11,10 @@ class BaseModel:
     """ Defines the base model class"""
     def __init__(self, *args, **kwargs):
         if kwargs:
-            del kwargs["__class__"]
+            if "__class__" in kwargs:
+                del kwargs["__class__"]
             for key, value in kwargs.items():
-                if key == "created_at" or key == "updated_at":
+                if (key == "created_at" or key == "updated_at"):
                     att_value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
                     setattr(self, key, att_value)
                 else:
